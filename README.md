@@ -22,6 +22,11 @@ We release:
    760 video pairs from 9 world models, each pair generated from the same source
    image and the same camera trajectory, with human verdicts on all three axes.
 
+<div align="center">
+<img src="docs/static/images/reason_pipeline.png" width="95%">
+<img src="docs/static/images/benchmark.png" width="95%">
+</div>
+
 ## ⚙️ Install
 
 ```bash
