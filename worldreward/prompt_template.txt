@@ -1,0 +1,227 @@
+You are an expert evaluator of AI-generated world simulation videos. Compare Video A and Video B from the 6 images and return one JSON review containing `action_control` and `visual_quality`.
+
+========================================================================
+PART I: SCENE CONTEXT
+========================================================================
+
+Original input image caption: "{caption}"
+
+Commanded action sequence:
+{action_sequence}
+
+Both videos were generated from the same source image and the same action sequence.
+
+========================================================================
+PART II: IMAGE LAYOUT
+========================================================================
+
+You receive 6 images:
+- Image 1: the original input image for the shared source scene.
+- Image 2: frame-grid overview. Top row = Video A, bottom row = Video B. Each action spans start / mid / end key frames.
+- Images 3-6: per-action detail for Actions 1-4. In each image, top row = Video A, bottom row = Video B, left column = action start, right column = action end.
+
+Important chunk note:
+- This chunk may start later in the full video, so the local start frame can differ from Image 1 because of earlier camera motion.
+- Newly revealed content is normal if it follows plausible camera motion.
+- Penalize source-scene drift only when the world identity itself changes incompatibly with Image 1.
+
+========================================================================
+PART III: ACTION REFERENCE
+========================================================================
+
+Actions use the form "<Translation> | <Rotation>".
+Each primitive is described with TWO anchors: where EXISTING content goes, and where NEW content enters.
+
+Translation reference:
+- Forward: zoom in, objects larger.
+- Backward: zoom out, objects smaller.
+- Right: camera moves right; existing objects slide toward the LEFT edge, NEW content enters from the RIGHT.
+- Left: camera moves left; existing objects slide toward the RIGHT edge, NEW content enters from the LEFT.
+- IDLE: no translation.
+
+Rotation reference:
+- YawRight: camera turns right; existing objects swing toward the LEFT edge, NEW content enters from the RIGHT.
+- YawLeft: camera turns left; existing objects swing toward the RIGHT edge, NEW content enters from the LEFT.
+- PitchUp: camera tilts UP to look higher; existing subject sinks toward the BOTTOM and may exit there, NEW content enters at the TOP edge.
+- PitchDown: camera tilts DOWN to look lower; existing subject rises toward the TOP and may exit there, NEW content enters at the BOTTOM edge.
+- IDLE: no rotation.
+
+Pitch reliable test (scene-independent): PitchUp => NEW content enters at the TOP edge, existing exits at the BOTTOM; PitchDown => NEW content enters at the BOTTOM edge, existing exits at the TOP. Sky-at-top / ground-at-bottom is only a hint when such regions exist; for indoor/close-up/abstract scenes judge purely by which EDGE reveals new content, not a vague up/down impression.
+
+For EACH action, PART I already lists the explicit expected per-component visual behaviour and the strict correctness criterion. Use that per-action block as the authoritative reference; do not re-derive pitch/yaw direction against it.
+
+Combined actions execute simultaneously. Motion should be visible but still subtle and temporally smooth, not a giant jump.
+
+========================================================================
+PART IV: TASK OVERVIEW
+========================================================================
+
+Return one review with two sections:
+1. `action_control`
+2. `visual_quality`
+
+The two sections are conceptually separate, but their factual claims must stay mutually consistent.
+
+GLOBAL CONSISTENCY RULES:
+1. Different winners are allowed for action and visual.
+2. If `action_control` says a video is static, near-static, frozen, or has no discernible camera motion, `dynamic_generation_quality` must not describe that same video as smooth, convincing, natural, or meaningful motion.
+3. Large pixel change caused by warping, melting, hallucinated reshaping, or chaotic jumps is not good dynamics.
+4. If the chunk start differs from Image 1 only because the camera has already moved, do not call that source-scene drift.
+5. Source-scene drift means the world identity changes incompatibly: scene category change, key entity replacement, strong attribute or material change, or incompatible global layout.
+6. Every analysis field must be non-empty. Every winner must be exactly `A`, `B`, or `Tie` where allowed, and exactly `A` or `B` where tie is forbidden.
+
+========================================================================
+PART V: ACTION CONTROL
+========================================================================
+
+Judge only camera motion: direction, magnitude, purity, temporal smoothness, and plausible 3D motion.
+Do not judge blur, artifacts, realism, texture fidelity, or source-scene preservation here.
+
+Action-control rules:
+1. Evaluate each action independently. It is normal for A and B to split wins across actions.
+2. Use Image 2 and Images 3-6 to judge motion. Do not treat mismatch between Image 1 and the local chunk start as an action failure.
+3. A blurry or artifacted video can still have correct motion. Only motion evidence matters.
+4. In action analyses, describe only observed motion. Good evidence includes statements like: "the building shifts right", "foreground objects grow larger", "new content appears on the left", or "No discernible camera motion."
+5. Avoid visual-quality words in action analyses, including terms such as blur, artifact, distortion, degraded, smear, collapse, melted, fidelity, realistic, or unrealistic.
+6. Use `Tie` only when motion execution is genuinely comparable or too ambiguous to separate.
+7. `action_control.overall_winner` must be consistent with the per-action results. If one video wins more actions, it should normally win overall. If counts tie, use finer judgment on motion correctness, magnitude, and purity.
+8. PART I gives, for every action, the expected per-component behaviour and strict correctness criterion. That block is authoritative; do not re-derive pitch/yaw direction against it.
+9. For a COMPOUND action (more than one commanded component, e.g. translation plus rotation, or a Yaw+Pitch pair), each per-video analysis MUST address EVERY commanded component separately: one clause for the translation and one clause for EACH rotation sub-axis. Do not judge a compound action from only one component.
+10. A video is CORRECT on an action only if (a) every commanded component matches its expected direction AND (b) there is no obvious un-commanded extra motion (e.g. zoom during a pure rotation, tilt during a pure translation, sideways drift during a pure pitch). Getting only one of several commanded components right is not correct.
+11. Name any un-commanded extra motion explicitly, and let it count against that video when choosing the per-action winner. Prefer the video that satisfies more commanded components with fewer purity violations.
+
+For each action, consider:
+- Direction correctness: does the observed content motion match the expected direction of EACH commanded component in PART I? For compound actions, all components must match.
+- Magnitude appropriateness: visible but not exaggerated; near-static usually means the action was not really executed.
+- Motion purity (required check): name and penalize unwanted extra zoom, lateral drift, tilt, or rotation that was not commanded.
+- Temporal smoothness: does the motion progress steadily rather than jumping or stalling?
+- 3D plausibility: parallax, scale change, and scene shift should look like camera motion.
+
+Action-analysis writing requirements:
+- Each per-action analysis should usually be 1-2 sentences.
+- Mention concrete motion evidence, not vague impressions.
+- If motion is absent or too weak to judge, say so directly.
+- `action_id` must be 1, 2, 3, 4 in order.
+- `action_label` must be EXACTLY the bare label from the matching `Action N label (copy this exactly): ...` line, i.e. strictly `<Translation> | <Rotation>` (e.g. `Right | YawLeft`). Never include the indented expected-behaviour reference lines or any other text in `action_label`.
+
+========================================================================
+PART VI: VISUAL QUALITY
+========================================================================
+
+Judge only how good the generated video looks over the whole chunk.
+Ignore action correctness as much as possible.
+
+You must judge exactly these three sub-dimensions:
+1. `temporal_consistency`
+2. `dynamic_generation_quality`
+3. `artifacts_and_structure_integrity`
+
+Visual-quality rules:
+1. Use Image 1 as the global source-scene reference.
+2. The local chunk start does not need to match Image 1 pixel-by-pixel; later camera viewpoint is normal.
+3. However, both videos should still look like the same underlying world as Image 1.
+4. Penalize source-scene drift such as:
+   - the scene category flips from indoor to outdoor, city to forest, beach to snowfield, desert to urban street, or any similarly incompatible world swap;
+   - the main subject or key entity is replaced;
+   - strong incompatible changes in object identity, material, color, texture, or semantics;
+   - the chunk start already looks like a different world with no plausible camera-motion explanation.
+5. Temporal consistency is mainly about frame-to-frame stability inside this chunk.
+6. Source-scene drift belongs mainly under `artifacts_and_structure_integrity`, unless it also flickers or changes over time within the chunk.
+7. A static or near-static video is a major penalty for `dynamic_generation_quality`, but it is not an automatic overall override if the moving video is catastrophically corrupted.
+8. Do not reward destructive deformation as good dynamics.
+9. `visual_quality.overall_winner` must respect sub-dimension evidence: a 3:0 lead must win overall; a 2:1 lead should normally win unless `overall_summary` explicitly explains a serious override reason.
+10. If all three sub-dimensions tie, still choose `A` or `B` based on the smaller but concrete overall edge.
+
+Sub-dimension guidance:
+
+`temporal_consistency`
+- Judge stability of appearance, lighting, texture, color, local details, and identity across frames.
+- Penalize flicker, sudden jumps, unstable local details, disappearing or reappearing content, and frame-to-frame attribute changes that are not explained by smooth camera motion.
+- If a video looks stable only because it barely moves at all, that stability does not automatically make it strong overall visual quality.
+
+`dynamic_generation_quality`
+- Judge whether the result feels like a genuinely generated video rather than a frozen image, shallow texture slide, or fake motion.
+- Reward meaningful, smooth, coherent dynamic update.
+- Penalize static output, near-static output, superficial 2D panning, mechanical sliding, and motion that is mostly destructive warping rather than true scene update.
+- A video may contain lots of visible change and still lose this sub-dimension if the change is mostly collapse, melting, or hallucinated motion instead of coherent generation.
+
+`artifacts_and_structure_integrity`
+- Jointly judge visible artifacts, structural stability, and compatibility with the source scene.
+- Penalize blur, ghosting, smearing, melting, tearing, duplicated parts, hallucinated fragments, identity drift, source-scene drift, structural collapse, and incompatible world changes.
+- The video with fewer and less severe failures should win this sub-dimension.
+
+Visual-analysis writing requirements:
+- Each sub-dimension analysis should usually be 1-2 sentences per video.
+- `overall_summary` should synthesize the three sub-dimensions explicitly.
+- If overall winner does not follow a 2:1 majority, explain the override clearly in `overall_summary`.
+
+========================================================================
+PART VII: OUTPUT FORMAT
+========================================================================
+
+Return exactly one JSON object and nothing else.
+No markdown, no surrounding explanation, no comments.
+
+The JSON must have this structure:
+{
+  "action_control": {
+    "actions": [
+      {
+        "action_id": 1,
+        "action_label": "<exact bare action 1 label, strictly '<Translation> | <Rotation>'>",
+        "video_a_analysis": "<for a COMPOUND action cover EVERY commanded component (translation + each rotation sub-axis), none omitted>",
+        "video_b_analysis": "<for a COMPOUND action cover EVERY commanded component, none omitted>",
+        "winner": "A|B|Tie"
+      },
+      {
+        "action_id": 2,
+        "action_label": "<exact bare action 2 label, strictly '<Translation> | <Rotation>'>",
+        "video_a_analysis": "<for a COMPOUND action cover EVERY commanded component (translation + each rotation sub-axis), none omitted>",
+        "video_b_analysis": "<for a COMPOUND action cover EVERY commanded component, none omitted>",
+        "winner": "A|B|Tie"
+      },
+      {
+        "action_id": 3,
+        "action_label": "<exact bare action 3 label, strictly '<Translation> | <Rotation>'>",
+        "video_a_analysis": "<for a COMPOUND action cover EVERY commanded component (translation + each rotation sub-axis), none omitted>",
+        "video_b_analysis": "<for a COMPOUND action cover EVERY commanded component, none omitted>",
+        "winner": "A|B|Tie"
+      },
+      {
+        "action_id": 4,
+        "action_label": "<exact bare action 4 label, strictly '<Translation> | <Rotation>'>",
+        "video_a_analysis": "<for a COMPOUND action cover EVERY commanded component (translation + each rotation sub-axis), none omitted>",
+        "video_b_analysis": "<for a COMPOUND action cover EVERY commanded component, none omitted>",
+        "winner": "A|B|Tie"
+      }
+    ],
+    "overall_summary": "...",
+    "overall_winner": "A|B"
+  },
+  "visual_quality": {
+    "temporal_consistency": {
+      "video_a_analysis": "...",
+      "video_b_analysis": "...",
+      "winner": "A|B|Tie"
+    },
+    "dynamic_generation_quality": {
+      "video_a_analysis": "...",
+      "video_b_analysis": "...",
+      "winner": "A|B|Tie"
+    },
+    "artifacts_and_structure_integrity": {
+      "video_a_analysis": "...",
+      "video_b_analysis": "...",
+      "winner": "A|B|Tie"
+    },
+    "overall_summary": "...",
+    "overall_winner": "A|B"
+  }
+}
+
+Output constraints:
+- Every required field must be present.
+- Winner values must use only `A`, `B`, or `Tie` where tie is allowed.
+- `action_control.overall_winner` and `visual_quality.overall_winner` must be only `A` or `B`.
+- Do not omit `video_b_analysis` just because Video B is weaker.
+- Write detailed English analyses rather than short labels only.

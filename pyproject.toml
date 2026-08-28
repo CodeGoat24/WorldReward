@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "worldreward"
+version = "0.1.0"
+description = "WorldReward: reward modeling for camera-conditioned world models"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "matplotlib>=3.7",
+    "pillow>=10.0",
+    "requests>=2.31",
+    "huggingface_hub>=0.26",
+]
+
+[project.optional-dependencies]
+# vLLM is deliberately NOT a hard dependency: the correct wheel depends on your
+# CUDA version, and the version floor is strict (see README "Install"). Install it
+# separately. Published results used 0.22.1rc1.dev166+gd0975a4b5 on CUDA 12.8.
+vllm = ["vllm"]
+
+[tool.setuptools]
+packages = ["worldreward"]

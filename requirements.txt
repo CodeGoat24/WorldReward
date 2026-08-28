@@ -1,0 +1,33 @@
+numpy>=1.24
+opencv-python>=4.8
+matplotlib>=3.7
+pillow>=10.0
+requests>=2.31
+huggingface_hub>=0.26
+
+# --- Inference backend -------------------------------------------------------
+# NOT installed by this file: the correct wheel depends on your CUDA version, and
+# the version floor is strict. See README ("Install") for details.
+#
+# WorldReward is initialized from Qwen3.5-9B, whose architecture is
+# `Qwen3_5ForConditionalGeneration`. vLLM must be new enough to register it:
+#
+#     python -c "from vllm.model_executor.models.registry import ModelRegistry as R; \
+#                print('Qwen3_5ForConditionalGeneration' in R.get_supported_archs())"
+#
+# must print True. Published results were produced with vLLM
+# 0.22.1rc1.dev166+gd0975a4b5 (CUDA 12.8).
+#
+#     pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128
+
+# --- Baselines (optional) ----------------------------------------------------
+# Only needed to run `baselines/`, and also NOT installed by this file, because
+# each baseline pins its own stack:
+#
+#     torch, transformers        Aesthetic (CLIP ViT-L/14 + LAION head)
+#     hpsv3                      HPSv3            github.com/MizzenAI/HPSv3
+#     VideoAlign checkout        VideoAlign       github.com/KwaiVGI/VideoAlign
+#     depth_anything_3           DAv3             github.com/ByteDance-Seed/Depth-Anything-3
+#
+# UnifiedReward-Think / -Flex need no extra package -- they talk HTTP to a vLLM
+# server and only use `requests`.
