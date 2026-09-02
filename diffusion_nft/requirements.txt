@@ -1,0 +1,114 @@
+# ======================================================================
+# Training / reward environment
+# ======================================================================
+#
+# Target: Python >= 3.10, < 3.12
+#
+# Install:
+#   # Recommended: install PyTorch separately with the CUDA build that
+#   # matches your driver (this file does NOT pin +cuXXX so it stays
+#   # portable across CUDA 11.8 / 12.1 / 12.4 / 12.6).
+#   #   pip install --index-url https://download.pytorch.org/whl/cu124 \
+#   #       torch==2.6.* torchvision==0.21.* torchaudio==2.6.*
+#   pip install -r requirements.txt
+#
+# The optional camera-estimator / geometry packages (DepthAnything3,
+# HunyuanWorld-Mirror, MonST3R) are NOT installed from here — they are cloned
+# on demand, see README section 2.2. `roma`, which MonST3R needs, is included
+# below so the clone works without extra steps.
+#
+# The reward model itself runs as a separate vLLM service in its own
+# environment; nothing for it is pinned here.
+
+torch>=2.5,<2.8
+torchvision>=0.20,<0.23
+torchaudio>=2.5,<2.8
+torchdata>=0.11,<0.12
+triton>=3.1,<3.5             # ships with torch on CUDA builds
+numpy>=1.26,<2.0              # 2.x breaks several downstreams (hpsv3, gsplat)
+scipy>=1.12,<2.0
+
+# ---------- HF stack ----------
+transformers>=4.48,<4.55      # 4.50 is what we tested on
+diffusers>=0.32,<0.40
+accelerate>=1.10,<1.20
+peft>=0.17,<0.25
+safetensors>=0.4,<0.8
+huggingface_hub>=0.30,<1.0
+tokenizers>=0.20,<0.25
+datasets>=3.0,<5.0
+timm>=1.0,<1.2
+
+# ---------- training infra ----------
+deepspeed>=0.15,<0.20
+flash-attn>=2.7,<3.0          # prebuilt wheels; match torch/CUDA manually
+ray>=2.40,<3.0
+wandb>=0.18,<1.0
+tensorboard>=2.18,<3.0
+trl>=0.12,<0.18
+
+# ---------- data / io ----------
+pyarrow>=18.0,<26.0
+pandas>=2.2,<3.0
+Pillow>=10.0,<13.0
+pillow_heif>=1.1,<2.0
+imageio>=2.34,<3.0
+imageio-ffmpeg>=0.5,<1.0
+opencv-python>=4.10,<5.0
+moviepy>=2.0,<3.0
+av>=14,<20                    # for pyav video backend
+matplotlib>=3.8,<4.0
+seaborn>=0.13,<1.0
+ftfy>=6.2
+
+# ---------- utilities ----------
+einops>=0.8,<1.0
+omegaconf>=2.3,<3.0
+PyYAML>=6.0,<7.0
+pydantic>=2.10,<3.0
+addict>=2.4,<3.0
+tqdm>=4.66,<5.0
+loguru>=0.7,<1.0
+cloudpickle>=3.1,<4.0
+filelock>=3.15,<4.0
+psutil>=6.0,<9.0
+requests>=2.32,<3.0
+rich>=13.0,<17.0
+
+# ---------- backend / serving (used by the reward-server client) ----------
+fastapi>=0.115,<1.0
+uvicorn>=0.30,<1.0
+starlette>=0.40,<2.0
+
+# ---------- reward / vision-geometry models ----------
+# MonST3R (vendored under monst3r/, extra deps only)
+roma>=1.5,<2.0                # SO(3) parameterization
+hydra-core>=1.3,<2.0          # required by vendored sam2
+iopath>=0.1,<1.0              # required by sam2
+evo>=1.30,<2.0                # trajectory ATE/RPE eval
+
+# Gaussian splatting / 3D utils (visualisation helpers)
+gsplat>=1.5,<2.0
+trimesh>=4.5,<5.0
+plyfile>=1.0,<2.0
+e3nn>=0.5,<0.7
+
+# ---------- reward: HPS v3 (install instructions below) ----------
+# `hpsv3` is published by MizzenAI; latest is 1.0.0. If your index
+# cannot resolve it, install manually:
+#   pip install hpsv3
+hpsv3>=1.0,<2.0
+
+# ---------- reward: aesthetic (pure pip deps only; see ckpt/README) ----------
+# Aesthetic predictor itself is a ~4MB MLP weight file at
+#   ckpt/aesthetic/sac+logos+ava1-l14-linearMSE.pth
+# and requires `transformers` + `CLIPModel` (listed above).
+# No extra pip package.
+
+# ---------- misc ----------
+qwen-vl-utils>=0.0.11,<1.0    # for Qwen2-VL text encoder I/O
+jaxtyping>=0.2,<1.0           # used by some vendored modules
+sentry-sdk>=2.0,<3.0          # optional telemetry
+rosbags>=0.10,<1.0            # optional, legacy dataset conversion
+# ---------- debugging ----------
+remote_pdb==2.1.0

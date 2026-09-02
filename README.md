@@ -329,6 +329,15 @@ column; `--` = axis not modelled.
 | Qwen3.5-27B | 63.68 | 44.34 | 62.76 | 65.07 | 37.33 | 65.75 | 65.05 | 51.61 | _63.44_ | 61.35 | 46.81 | 59.22 | 64.93 | 38.36 | 66.85 | 62.87 | 51.50 | 58.68 | 60.66 | 40.98 | 60.66 |
 | **WorldReward-9B** | **77.63** | **81.32** | **73.03** | **76.71** | 77.74 | **78.77** | **73.12** | **86.02** | **64.52** | **81.56** | **81.91** | **72.70** | **77.26** | 81.37 | **71.78** | **78.74** | **82.04** | **75.75** | _73.77_ | **77.05** | _65.57_ |
 
+## 🎬 RL Post-Training with WorldReward
+
+[`diffusion_nft/`](diffusion_nft) contains the RL post-training codebase that
+uses WorldReward as the reward signal for camera-conditioned world models
+(built on HunyuanVideo-1.5 + HY-WorldPlay). It serves WorldReward-9B through
+vLLM as a pairwise reward server and optimizes the world model with NFT.
+See [`diffusion_nft/README.md`](diffusion_nft/README.md) for environment
+setup, data preparation and how to launch training.
+
 ## 📧 Contact
 
 If you have any comments or questions, please open a new issue or feel free to contact [Yibin Wang](https://codegoat24.github.io).

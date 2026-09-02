@@ -1,0 +1,151 @@
+# GRPO training config — 64 GPUs (8 nodes x 8).
+#
+# Set the six paths marked "SET ME", then:
+#   bash scripts/train.sh configs/train/train_grpo_64gpu.yaml <node_rank> <num_nodes>
+
+experiment:
+  output_dir: ./output/diffusion_nft_grpo
+  generated_videos_dir: ./output/generated_videos/diffusion_nft_grpo
+
+runtime:
+  skip_eval: false
+  max_train_steps: 100
+  train_batch_size: 1
+  train_sp_batch_size: 1
+  gradient_accumulation_steps: 2
+  dataloader_num_workers: 4
+
+distributed:
+  # num_gpus must equal hsdp_replicate_dim * hsdp_shard_dim.
+  num_gpus: 64
+  sp_size: 1
+  tp_size: 1
+  gpu_para: 1
+  hsdp_replicate_dim: 8   # node count
+  hsdp_shard_dim: 8       # GPUs per node
+
+data:
+  # SET ME — see docs/DATA_FORMAT.md.
+  json_path: dataset/train_latents/latents.json
+  eval_json_path: dataset/eval_latents/latents.json
+  random_pose_path: dataset/random_poses.json
+  # SET ME — written by scripts/download_models.py.
+  vae_path: ckpt/tencent--HunyuanVideo-1.5/vae/
+  cache_dir: ./ckpt
+  neg_prompt_path: ''
+  neg_byt5_prompt_path: ''
+  data_path: ''
+
+model:
+  cls_name: HunyuanTransformer3DARActionModel
+  # SET ME — written by scripts/download_models.py.
+  load_from_dir: ckpt/tencent--HunyuanVideo-1.5/transformer/480p_i2v/
+  ar_action_load_from_dir: ckpt/tencent--HY-WorldPlay/ar_model/diffusion_pytorch_model.safetensors
+  pretrained_model_name_or_path: ''
+  causal: true
+  action: true
+  i2v_rate: 1.0
+  # max_chunk_id cannot exceed window_frames / single_chunk_size.
+  window_frames: 64
+  single_chunk_size: 4
+  lora_training: false
+  lora_rank: 64
+  lora_alpha: 64
+
+optimization:
+  learning_rate: 1.0e-5
+  mixed_precision: bf16
+  # Runs an eval, then writes a checkpoint, every N steps.
+  checkpointing_steps: 10
+  checkpoints_total_limit: 12
+  weight_decay: 0.0001
+  # Gradients routinely exceed this, so the update size is effectively
+  # learning_rate * max_grad_norm. Change learning_rate to change step size.
+  max_grad_norm: 2.0
+  enable_gradient_checkpointing_type: full
+  training_cfg_rate: 0.0
+  enable_torch_compile: false
+  lr_scheduler: constant       # constant | constant_with_warmup | cosine_with_min_lr
+  lr_warmup_steps: 0
+  min_lr_ratio: 0.5            # cosine_with_min_lr only
+  # "latest" resumes the newest resumable checkpoint under output_dir, or
+  # starts from step 0 if there is none.
+  resume_from_checkpoint: latest
+
+grpo:
+  sampling_steps: 30
+  grpo_generation_num: 12      # candidates per prompt
+  train_timestep_fraction: 0.5
+  bestofn: 6
+  sampling_batch_size: 1
+  # Chunk depth cycles as min + ((step - 1) % (max - min + 1)).
+  chunk_selection_strategy: min2max
+  min_chunk_id: 1
+  max_chunk_id: 16
+  chunk_target_repeats: 3
+  chunk_sample_alpha: 0.0
+  adv_clip_max: 2.0
+  std_type: global
+  grpo_sde: true
+  grpo_eta: 0.3
+  grpo_eta_cutoff: 0.3
+  grpo_sde_solver: flux
+
+reward:
+  # dav3 needs the depth_anything_3 package, worldmirror needs
+  # HunyuanWorld-Mirror. Neither is bundled — see README section 2.2.
+  camera_estimator: dav3
+
+  action_reward_weight: 2.0
+  action_reward_type: fine_action     # fine_action | action
+
+  hpsv3_reward_weight: 0.0
+  hpsv3_quality_reward_weight: 0.0
+  hpsv3_quality_drift_reward_weight: 1.0
+
+  # Set both to 0.0 to drop the reward-server dependency.
+  vlm_action_reward_weight: 2.0
+  vlm_vq_reward_weight: 1.0
+  vlm_rm_host: localhost
+  vlm_rm_port: 9080
+  vlm_rm_model_name: WorldReward
+  vlm_pair_mode: all
+  vlm_rm_num_replicas: 1
+  # Empty uses vlm_rm_host/port/num_replicas above; a non-empty list overrides
+  # all three and is round-robined across.
+  vlm_rm_urls: []
+  vlm_prefilter_enabled: false
+
+  # ate_rmse / rpe_trans / rpe_rot / aesthetic are intentionally absent: they
+  # are eval-only. Adding them with a non-zero weight makes them training
+  # targets, and the geometry three then also require MonST3R.
+
+eval:
+  # Cached step-0 reference clips for the vlm win-rate metrics. Keyed on base
+  # checkpoint + eval json + eval_window_frames + eval_sampling_steps — rename
+  # when any of those change. Empty is correct for a first run; the step-0 eval
+  # populates it (~1 h for 128 samples).
+  eval_baseline_dir: ./output/eval_baselines/win32_ode20
+  eval_sampling_steps: 20
+  eval_worldmirror: true
+  eval_monst3r: true           # geometry metrics; needs the MonST3R package
+  eval_monst3r_n_iter: 300     # alignment iterations per clip
+  eval_monst3r_stride: 4
+  eval_aesthetic: true
+  eval_aesthetic_num_frames: 16
+  # Independent of model.window_frames: eval only covers the first
+  # eval_window_frames / single_chunk_size chunks. Changing this invalidates
+  # eval_baseline_dir.
+  eval_window_frames: 32
+
+ema:
+  ema_min_decay: 0.4
+  ema_max_decay: 0.9
+  ema_step_decay: 0.01
+  ema_ckpt_decay: 0.9
+
+logging:
+  # Leave empty and export WANDB_API_KEY instead.
+  wandb_key: ''
+  wandb_entity: ''
+  tracker_project_name: diffusion_nft_grpo

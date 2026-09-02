@@ -1,0 +1,141 @@
+# ========== Python ==========
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+
+# ========== Virtual Environments ==========
+.venv/
+venv/
+env/
+.env
+
+# ========== IDE & OS ==========
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ========== Logs & Monitoring ==========
+*.log
+/logs/
+wandb/
+/runs/
+/tensorboard/
+/tb_logs/
+
+# ========== Training Outputs ==========
+/output/
+/output_old/
+/outputs/
+/results/
+
+node_modules/
+third_party/
+
+# ========== Checkpoints & Model Weights ==========
+ckpt/
+/checkpoint/
+/checkpoints/
+/pretrained/
+/weights/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.pb
+*.h5
+*.hdf5
+*.tflite
+*.mlmodel
+
+# ========== Datasets & Large Data ==========
+/data/
+/dataset/
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.parquet
+*.feather
+*.arrow
+*.hdf
+*.lmdb
+*.tfrecord
+
+# ========== Images ==========
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.webp
+*.ico
+*.svg
+*.psd
+*.raw
+*.heic
+*.heif
+
+# ========== Videos ==========
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+*.m4v
+*.mpg
+*.mpeg
+*.3gp
+*.ogv
+
+# ========== Audio ==========
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+*.wma
+*.m4a
+
+# ========== Archives ==========
+*.zip
+*.tar
+*.tar.gz
+*.gz
+*.bz2
+*.7z
+*.rar
+
+*.whl
+
+# ========== Jupyter ==========
+.ipynb_checkpoints/
+
+# ========== Cache ==========
+*.cache
+.cache/
+
+# ========== Optional third-party sources (fetched on demand) ==========
+# Not vendored here for licensing reasons — see THIRD_PARTY_LICENSES.md.
+fastvideo/rewards/computers/monst3r_lib/
+fastvideo/rewards/computers/depth_anything_3/
+fastvideo/rewards/computers/HunyuanWorldMirror/
+DepthAnythingV3/
+vllm/
