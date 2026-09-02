@@ -2,7 +2,7 @@
 
 # WorldReward: Reward Modeling for Camera-Conditioned World Models
 
-<a href="https://github.com/CodeGoat24/WorldReward"><img src='https://img.shields.io/badge/arXiv-WorldReward-blue' alt='Paper'></a>
+<a href="WorldReward.pdf"><img src='https://img.shields.io/badge/Paper-WorldReward-blue' alt='Paper'></a>
 <a href="https://huggingface.co/CodeGoat24/WorldReward-9B"><img src='https://img.shields.io/badge/Huggingface-Model-yellow' alt='Model'></a>
 <a href="https://huggingface.co/datasets/CodeGoat24/WorldReward-Bench"><img src='https://img.shields.io/badge/Huggingface-Benchmark-green' alt='Benchmark'></a>
 <a href="LICENSE"><img src='https://img.shields.io/badge/License-Apache_2.0-lightgrey' alt='License'></a>
