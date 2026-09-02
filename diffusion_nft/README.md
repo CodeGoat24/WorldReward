@@ -330,3 +330,9 @@ Checkpoints and sample videos go to the `output_dir` /
 Every `checkpointing_steps` steps the trainer runs an eval, logs it as
 `Eval step <step-1>` (the state of `checkpoint-<step>`), then writes the
 checkpoint.
+
+---
+
+## 🙏 Acknowledgement
+
+Our RL training code is built upon [WorldCompass](https://github.com/Tencent-Hunyuan/HY-WorldPlay/tree/main/worldcompass). We sincerely appreciate their excellent work.
