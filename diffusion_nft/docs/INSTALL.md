@@ -132,7 +132,7 @@ bash scripts/train.sh configs/train/my_run.yaml 0 1
 
 # reward server, separately and on another set of GPUs — see section 2 above
 conda activate reward
-python -m vllm.entrypoints.openai.api_server --model CodeGoat24/WorldReward-9B ...
+python -m vllm.entrypoints.openai.api_server --model CodeGoat24/WorldReward-qwen35-9b ...
 ```
 
 The two envs never need to see each other's site-packages — they communicate only over HTTP.

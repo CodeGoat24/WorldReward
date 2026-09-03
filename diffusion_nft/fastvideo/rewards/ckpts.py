@@ -59,7 +59,7 @@ class RewardCheckpoints:
     # See the "Reward Server" section of the README; override with $VLM_RM.
     vlm_rm: str = _resolve(
         "VLM_RM",
-        "CodeGoat24/WorldReward-9B",
+        "CodeGoat24/WorldReward-qwen35-9b",
     )
 
 

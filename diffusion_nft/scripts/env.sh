@@ -20,7 +20,7 @@ CONDA_ENV_NAME="${CONDA_ENV_NAME:-diffusion_nft}"
 
 # --- reward model ---------------------------------------------------------
 # Default reward model served over vLLM. See README "Reward Server".
-VLM_RM_MODEL_DEFAULT="${VLM_RM_MODEL_DEFAULT:-CodeGoat24/WorldReward-9B}"
+VLM_RM_MODEL_DEFAULT="${VLM_RM_MODEL_DEFAULT:-CodeGoat24/WorldReward-qwen35-9b}"
 
 # --- derived — do not edit ------------------------------------------------
 CONDA_SH="${CONDA_ROOT:-}/etc/profile.d/conda.sh"

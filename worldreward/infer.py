@@ -31,7 +31,7 @@ from .parse import parse_response
 from .prompt import build_prompt
 
 # vLLM defaults that reproduce the published evaluation.
-DEFAULT_MODEL = "CodeGoat24/WorldReward-9B"
+DEFAULT_MODEL = "CodeGoat24/WorldReward-qwen35-9b"
 DEFAULT_MAX_MODEL_LEN = 49152
 DEFAULT_MAX_TOKENS = 4096
 DEFAULT_TEMPERATURE = 0.0

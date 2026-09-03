@@ -6,7 +6,7 @@ Offline backend (recommended, one process per GPU):
     CUDA_VISIBLE_DEVICES=0 python scripts/run_inference.py \
         --render-root outputs/rendered_chunks \
         --output outputs/chunk_predictions.json \
-        --model CodeGoat24/WorldReward-9B
+        --model CodeGoat24/WorldReward-qwen35-9b
 
 Server backend (against ``scripts/launch_vllm_server.sh``):
 

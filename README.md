@@ -3,7 +3,7 @@
 # WorldReward: Reward Modeling for Camera-Conditioned World Models
 
 <a href="WorldReward.pdf"><img src='https://img.shields.io/badge/Paper-WorldReward-blue' alt='Paper'></a>
-<a href="https://huggingface.co/CodeGoat24/WorldReward-9B"><img src='https://img.shields.io/badge/Huggingface-Model-yellow' alt='Model'></a>
+<a href="https://huggingface.co/CodeGoat24/WorldReward-qwen35-9b"><img src='https://img.shields.io/badge/Huggingface-Model-yellow' alt='Model'></a>
 <a href="https://huggingface.co/datasets/CodeGoat24/WorldReward-Bench"><img src='https://img.shields.io/badge/Huggingface-Benchmark-green' alt='Benchmark'></a>
 <a href="LICENSE"><img src='https://img.shields.io/badge/License-Apache_2.0-lightgrey' alt='License'></a>
 
@@ -11,7 +11,7 @@
 
 We release:
 
-1. **[WorldReward](https://huggingface.co/CodeGoat24/WorldReward-9B)** — a reward
+1. **[WorldReward](https://huggingface.co/CodeGoat24/WorldReward-qwen35-9b)** — a reward
    model for camera-conditioned world models. Given a source image, a commanded
    camera trajectory and two generated videos, it judges **action following**
    (per-action camera-motion correctness) and **visual quality** across three
@@ -96,7 +96,7 @@ python scripts/preprocess.py --pairs my_pairs.jsonl \
 
 ```bash
 python scripts/run_inference.py --render-root outputs/rendered_chunks \
-    --output outputs/chunk_predictions.json --model CodeGoat24/WorldReward-9B
+    --output outputs/chunk_predictions.json --model CodeGoat24/WorldReward-qwen35-9b
 ```
 
 Writes per-chunk reviews to `chunk_predictions.json` and pair verdicts to
@@ -176,7 +176,7 @@ from worldreward import render_pair, predict_pair
 from worldreward.infer import OfflineRunner
 
 chunks = render_pair(pair, output_root="outputs/rendered_chunks")
-runner = OfflineRunner(model_path="CodeGoat24/WorldReward-9B")
+runner = OfflineRunner(model_path="CodeGoat24/WorldReward-qwen35-9b")
 records = runner.run(chunks)
 
 verdict = predict_pair(r["review_payload"] for r in records)
@@ -190,7 +190,7 @@ image transport entirely. Run one process per GPU with `CUDA_VISIBLE_DEVICES`.
 When the model is shared across machines, serve it instead:
 
 ```bash
-bash scripts/launch_vllm_server.sh --model-path CodeGoat24/WorldReward-9B
+bash scripts/launch_vllm_server.sh --model-path CodeGoat24/WorldReward-qwen35-9b
 python scripts/run_inference.py --backend server \
     --render-root outputs/rendered_chunks \
     --output outputs/chunk_predictions.json
@@ -225,7 +225,7 @@ field with the human verdicts and the `trajectory_group` / `style` slice keys.
 ### Reproduce the evaluation
 
 ```bash
-python worldreward-bench/run_bench.py --model CodeGoat24/WorldReward-9B
+python worldreward-bench/run_bench.py --model CodeGoat24/WorldReward-qwen35-9b
 ```
 
 Downloads if missing, renders, infers, scores. Stages resumable via `--stage`.
@@ -327,13 +327,13 @@ column; `--` = axis not modelled.
 | *Backbone, zero-shot* | | | | | | | | | | | | | | | | | | | | | |
 | Qwen3.5-9B | 48.42 | 48.29 | 43.82 | 48.29 | 45.55 | 41.78 | 52.69 | 52.15 | 49.46 | 45.74 | 48.58 | 42.20 | 50.14 | 43.84 | 47.12 | 47.01 | 52.10 | 42.81 | 45.90 | 54.10 | 29.51 |
 | Qwen3.5-27B | 63.68 | 44.34 | 62.76 | 65.07 | 37.33 | 65.75 | 65.05 | 51.61 | _63.44_ | 61.35 | 46.81 | 59.22 | 64.93 | 38.36 | 66.85 | 62.87 | 51.50 | 58.68 | 60.66 | 40.98 | 60.66 |
-| **WorldReward-9B** | **77.63** | **81.32** | **73.03** | **76.71** | 77.74 | **78.77** | **73.12** | **86.02** | **64.52** | **81.56** | **81.91** | **72.70** | **77.26** | 81.37 | **71.78** | **78.74** | **82.04** | **75.75** | _73.77_ | **77.05** | _65.57_ |
+| **WorldReward-qwen35-9b** | **77.63** | **81.32** | **73.03** | **76.71** | 77.74 | **78.77** | **73.12** | **86.02** | **64.52** | **81.56** | **81.91** | **72.70** | **77.26** | 81.37 | **71.78** | **78.74** | **82.04** | **75.75** | _73.77_ | **77.05** | _65.57_ |
 
 ## 🎬 RL Post-Training with WorldReward
 
 [`diffusion_nft/`](diffusion_nft) contains the RL post-training codebase that
 uses WorldReward as the reward signal for camera-conditioned world models
-(built on HunyuanVideo-1.5 + HY-WorldPlay). It serves WorldReward-9B through
+(built on HunyuanVideo-1.5 + HY-WorldPlay). It serves WorldReward-qwen35-9b through
 vLLM as a pairwise reward server and optimizes the world model with NFT.
 See [`diffusion_nft/README.md`](diffusion_nft/README.md) for environment
 setup, data preparation and how to launch training.

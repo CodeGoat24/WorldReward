@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Serve WorldReward behind an OpenAI-compatible HTTP endpoint.
 #
-#   bash scripts/launch_vllm_server.sh --model-path CodeGoat24/WorldReward-9B
+#   bash scripts/launch_vllm_server.sh --model-path CodeGoat24/WorldReward-qwen35-9b
 #
 # Then point the client at it:
 #
@@ -15,7 +15,7 @@
 # across machines or already running.
 set -euo pipefail
 
-MODEL_PATH="CodeGoat24/WorldReward-9B"
+MODEL_PATH="CodeGoat24/WorldReward-qwen35-9b"
 HOST="0.0.0.0"
 PORT="8080"
 SERVED_MODEL_NAME="WorldReward"
@@ -35,7 +35,7 @@ usage() {
   cat <<'EOF'
 
 Options:
-  --model-path PATH               HF repo id or local checkpoint (default: CodeGoat24/WorldReward-9B)
+  --model-path PATH               HF repo id or local checkpoint (default: CodeGoat24/WorldReward-qwen35-9b)
   --host HOST                     Bind address (default: 0.0.0.0)
   --port PORT                     Bind port (default: 8080)
   --served-model-name NAME        Model name clients must send (default: WorldReward)

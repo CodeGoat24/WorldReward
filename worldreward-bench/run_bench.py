@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Reproduce the WorldReward-Bench evaluation end to end.
 
-    python worldreward-bench/run_bench.py --model CodeGoat24/WorldReward-9B
+    python worldreward-bench/run_bench.py --model CodeGoat24/WorldReward-qwen35-9b
 
 Runs four stages -- download, preprocess, inference, score -- each of which is
 independently resumable, so an interrupted run continues where it stopped. Use
@@ -90,7 +90,7 @@ def merge_predictions(work_dir: Path, merged_path: Path) -> Path:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--model", default="CodeGoat24/WorldReward-9B", help="HF repo id or local checkpoint")
+    parser.add_argument("--model", default="CodeGoat24/WorldReward-qwen35-9b", help="HF repo id or local checkpoint")
     parser.add_argument("--work-dir", default="outputs/bench", help="Directory for renders and predictions")
     parser.add_argument("--bench-dir", default="data/WorldReward-Bench", help="Where the dataset lives")
     parser.add_argument(

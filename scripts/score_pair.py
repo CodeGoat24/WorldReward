@@ -45,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     spans.add_argument("--frames-per-action", type=int, help="Frames each action occupies")
     spans.add_argument("--segment-frames", help="Comma-separated per-action frame counts (unequal durations)")
 
-    parser.add_argument("--model", default="CodeGoat24/WorldReward-9B", help="HF repo id or local checkpoint")
+    parser.add_argument("--model", default="CodeGoat24/WorldReward-qwen35-9b", help="HF repo id or local checkpoint")
     parser.add_argument("--left-name", default="left", help="Label for the left system in the output")
     parser.add_argument("--right-name", default="right", help="Label for the right system in the output")
     parser.add_argument("--work-dir", default=None, help="Keep intermediate renders here instead of a temp dir")

@@ -5,7 +5,7 @@ Typical use::
     from worldreward import render_pair, OfflineRunner, predict_pair
 
     chunks = render_pair(pair, output_root="rendered_chunks")
-    runner = OfflineRunner(model_path="CodeGoat24/WorldReward-9B")
+    runner = OfflineRunner(model_path="CodeGoat24/WorldReward-qwen35-9b")
     records = runner.run(chunks)
     prediction = predict_pair(r["review_payload"] for r in records)
 """

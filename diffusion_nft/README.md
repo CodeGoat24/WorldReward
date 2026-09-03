@@ -82,7 +82,7 @@ own weights and KV cache, not something the training ranks load. One replica per
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server \
-    --model CodeGoat24/WorldReward-9B \
+    --model CodeGoat24/WorldReward-qwen35-9b \
     --served-model-name WorldReward \
     --tensor-parallel-size 1 \
     --port 9080 --host 0.0.0.0 \
@@ -292,7 +292,7 @@ On each of the two reward nodes, start one replica per GPU:
 ```bash
 for GPU in 0 1 2 3 4 5 6 7; do
   CUDA_VISIBLE_DEVICES=$GPU python -m vllm.entrypoints.openai.api_server \
-      --model CodeGoat24/WorldReward-9B \
+      --model CodeGoat24/WorldReward-qwen35-9b \
       --served-model-name WorldReward \
       --tensor-parallel-size 1 \
       --port $((9080 + GPU)) --host 0.0.0.0 \
