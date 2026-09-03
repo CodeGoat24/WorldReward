@@ -20,7 +20,8 @@ We release:
 
 2. **[WorldReward-Bench](https://huggingface.co/datasets/CodeGoat24/WorldReward-Bench)** —
    760 video pairs from 9 world models, each pair generated from the same source
-   image and the same camera trajectory, with human verdicts on all three axes.
+   image and the same camera trajectory, with human verdicts on three axes:
+   **action consistency**, **appearance quality** and **motion quality**.
 
 <div align="center">
 <img src="docs/static/images/reason_pipeline.png" width="95%">
