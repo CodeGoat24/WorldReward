@@ -11,7 +11,7 @@
 
 We release:
 
-1. **[WorldReward](https://huggingface.co/CodeGoat24/WorldReward-qwen35-9b)** — a reward
+1. **[WorldReward](https://huggingface.co/collections/CodeGoat24/worldreward)** — a reward
    model for camera-conditioned world models. Given a source image, a commanded
    camera trajectory and two generated videos, it judges **action following**
    (per-action camera-motion correctness) and **visual quality** across three
@@ -27,6 +27,12 @@ We release:
 <img src="docs/static/images/reason_pipeline.png" width="95%">
 <img src="docs/static/images/benchmark.png" width="95%">
 </div>
+
+## 🔥 News
+
+* **[2026/09/07]** 🔥🔥🔥 We release [WorldReward-qwen38-27b](https://huggingface.co/CodeGoat24/WorldReward-qwen38-27b). Feel free to try it out!
+* **[2026/09/03]** 🔥🔥 We release our [paper](https://arxiv.org/abs/2609.03952) and the [project page](https://codegoat24.github.io/WorldReward/)!
+* **[2026/08/29]** 🔥 We release [WorldReward-qwen35-9b](https://huggingface.co/CodeGoat24/WorldReward-qwen35-9b) together with [WorldReward-Bench](https://huggingface.co/datasets/CodeGoat24/WorldReward-Bench), and all inference and evaluation code in this repository.
 
 ## ⚙️ Install
 
