@@ -352,9 +352,9 @@ If you have any comments or questions, please open a new issue or feel free to c
 ## ⭐ Citation
 
 ```bibtex
-@article{WorldReward,
+@article{wang2026worldreward,
   title={WorldReward: Reward Modeling for Camera-Conditioned World Models},
-  author={Wang, Yibin and Wang, Zehan and Tang, Junshu and Li, Zhimin and Zhou, Yujie and Bu, Jiazi and Ling, Pengyang and Han, Feng and Zhang, Zhixiong and Xing, Long and Ding, Shengyuan and Li, Ziang and Jin, Cheng and Zang, Yuhang and Wang, Jiaqi and Pang, Tianyu},
+  author={Wang, Yibin and Wang, Zehan and Tang, Junshu and Li, Zhimin and Zhou, Yujie and Bu, Jiazi and Ling, Pengyang and Han, Feng and Zhang, Zhixiong and Xing, Long and others},
   journal={arXiv preprint arXiv:2609.03952},
   year={2026}
 }
